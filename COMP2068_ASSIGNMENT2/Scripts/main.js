@@ -1,8 +1,8 @@
 ﻿var stage;
-var playerMoney = 1000;
+var playerMoney = 100;
 var winnings = 0;
 var jackpot = 5000;
-var turn = 0;
+
 var playerBet = 0;
 var winNumber = 0;
 var lossNumber = 0;
@@ -37,6 +37,18 @@ function drawSlotMachine() {
     var betoneButton = new createjs.Bitmap("img/betoneButton.jpg");
     var cashoutButton = new createjs.Bitmap("img/cashoutButton.jpg");
 
+    var firstReel = new createjs.Bitmap("img/blank.jpg");
+    firstReel.x = 30;
+    firstReel.y = 80;
+
+    var secondReel = new createjs.Bitmap("img/blank.jpg");
+    secondReel.x = 185;
+    secondReel.y = 80;
+
+    var thirdReel = new createjs.Bitmap("img/blank.jpg");
+    thirdReel.x = 340;
+    thirdReel.y = 80;
+
 
     var creditsText = new createjs.Text(playerMoney, "30px Arial", "red");
     creditsText.x = 175;
@@ -64,7 +76,7 @@ function drawSlotMachine() {
 
     cashoutButton.x = 30;
     cashoutButton.y = 408;
-    stage.addChild(slotMachine, spinButton, betmaxButton, betoneButton, cashoutButton, creditsText, betText, winnerPaidText);
+    stage.addChild(slotMachine, spinButton, betmaxButton, betoneButton, cashoutButton, creditsText, betText, winnerPaidText, firstReel, secondReel, thirdReel);
 
     spinButton.addEventListener("click", spinClickHandler);
     betmaxButton.addEventListener("click", betmaxClickHandler);
@@ -74,19 +86,53 @@ function drawSlotMachine() {
 }
 
 function spinClickHandler() {
-    alert("you click spin");
+    if (playerMoney == 0) {
+        if (confirm("You ran out of Money! \nDo you want to play again?")) {
+            resetAll();
+        }
+    }
+    else if (playerBet == 0) {
+        alert("You should place bets first.");
+    }
+    else {
+        spinResult = Reels();
+        fruits = spinResult[0] + " - " + spinResult[1] + " - " + spinResult[2];
+        $("div#result>p").text(fruits);
+        determineWinnings();
+        showPlayerStats();
+    }
+
 }
 
+/* Bet amount of ten. */
 function betmaxClickHandler() {
-    alert("you click spin");
+    playerBet = playerBet + 10;
+    playerMoney = playerMoney - 10;
+    if (playerMoney >= 0) {
+        drawSlotMachine();
+    }
+    else {
+        alert("You don't have enough money.")
+    }
 }
 
+/* Bet amount of one. */
 function betoneClickHandler() {
-    alert("you click spin");
+    
+    playerBet++;
+    playerMoney = playerMoney - 1;
+    if (playerMoney >= 0) {
+        drawSlotMachine();
+    }
+    else {
+        alert("You don't have enough money.")
+    }
 }
 
+/* Program termination - Cash out button.  */
 function cashoutClickHandler() {
-    alert("you click spin");
+    alert("Program terminated. Good bye!");
+    window.close();
 }
 
 /* Utility function to reset all fruit tallies */
@@ -103,10 +149,9 @@ function resetFruitTally() {
 
 /* Utility function to reset the player stats */
 function resetAll() {
-    playerMoney = 1000;
+    playerMoney = 100;
     winnings = 0;
     jackpot = 5000;
-    turn = 0;
     playerBet = 0;
     winNumber = 0;
     lossNumber = 0;
